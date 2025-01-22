@@ -1,0 +1,114 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f3f4f6;
+    color: #2c3e50;
+    line-height: 1.6;
+}
+
+header {
+    text-align: center;
+    padding: 20px;
+    margin-bottom: 30px;
+    background: linear-gradient(135deg, #6a1b9a, #8e44ad, #9c4dcc);
+    color: white;
+    border-radius: 15px;
+}
+
+header img {
+    max-width: 80px;
+    margin-bottom: 10px;
+    display: block;
+    margin: 0 auto;
+}
+
+header h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+/* Navigation */
+nav ul {
+    display: flex;
+    justify-content: center;
+    background: linear-gradient(90deg, #6a1b9a, #9c4dcc);
+    padding: 15px 0;
+    list-style: none;
+}
+
+nav ul li {
+    margin: 0 15px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+nav ul li a:hover {
+    color: #ffccff;
+}
+
+/* Banner */
+.banner {
+    height: 400px;
+    background: url('https://via.placeholder.com/1200x400') no-repeat center center;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+.banner h2 {
+    font-size: 3rem;
+    animation: fadeIn 1.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(-20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Slider */
+.slider {
+    display: flex;
+    overflow: hidden;
+    border-radius: 15px;
+    margin: 20px 0;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.slider img {
+    width: 100%;
+    transition: transform 0.5s ease-in-out;
+}
+
+.slider:hover img {
+    transform: scale(1.05);
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    margin-top: 30px;
+    padding: 20px;
+    background: linear-gradient(90deg, #6a1b9a, #9c4dcc);
+    color: white;
+    border-radius: 10px;
+}
