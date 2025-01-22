@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Admin</title>
     <style>
+        /* Global Styles */
         * {
             margin: 0;
             padding: 0;
@@ -15,14 +16,23 @@
             font-family: 'Poppins', sans-serif;
             background-color: #f3f4f6;
             color: #2c3e50;
+            line-height: 1.6;
         }
 
         header {
             text-align: center;
             padding: 20px;
+            margin-bottom: 30px;
             background: linear-gradient(135deg, #6a1b9a, #8e44ad, #9c4dcc);
             color: white;
             border-radius: 15px;
+        }
+
+        header img {
+            max-width: 80px;
+            margin-bottom: 10px;
+            display: block;
+            margin: 0 auto;
         }
 
         header h1 {
@@ -36,6 +46,7 @@
             opacity: 0.9;
         }
 
+        /* Login Section */
         .login-container {
             display: flex;
             justify-content: center;
@@ -53,6 +64,11 @@
             max-width: 400px;
             width: 100%;
             text-align: center;
+        }
+
+        .login-header img {
+            width: 80px;
+            margin-bottom: 15px;
         }
 
         .login-header h1 {
