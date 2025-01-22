@@ -4,7 +4,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, PasswordField
 from wtforms.validators import DataRequired, Length
 
-app = Flask(__name__)
+app = Flask(_name_)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/library_db'
 app.config['SECRET_KEY'] = 'your_secret_key'
 db = SQLAlchemy(app)
@@ -15,7 +15,7 @@ class Books(db.Model):
     pengarang = db.Column(db.String(100), nullable=False)
     tahun = db.Column(db.Integer, nullable=False)
 
-    def __repr__(self):
+    def _repr_(self):
         return f'<Book {self.judul}>'
 
 class BookForm(FlaskForm):
@@ -100,5 +100,5 @@ def delete_book(id):
     flash('Buku berhasil dihapus!', 'success')
     return redirect(url_for('index'))
 
-if __name__ == '__main__':
+if _name_ == '_main_':
     app.run(debug=True)
