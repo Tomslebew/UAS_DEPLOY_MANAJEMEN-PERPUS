@@ -1,14 +1,18 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
-from flask_wtf import FlaskForm
+from flask_wtf import FlaskForm, CSRFProtect
 from wtforms import StringField, IntegerField, SubmitField, PasswordField
 from wtforms.validators import DataRequired, Length
+import os
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/library_db'
-app.config['SECRET_KEY'] = 'your_secret_key'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your_secret_key')  # Gunakan variabel lingkungan untuk deployment
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Optimasi konfigurasi
 db = SQLAlchemy(app)
+csrf = CSRFProtect(app)
 
+# Model untuk Tabel Buku
 class Books(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     judul = db.Column(db.String(100), nullable=False)
@@ -18,22 +22,30 @@ class Books(db.Model):
     def __repr__(self):
         return f'<Book {self.judul}>'
 
+# Form untuk Buku
 class BookForm(FlaskForm):
     judul = StringField('Judul Buku', validators=[DataRequired(), Length(max=100)])
     pengarang = StringField('Pengarang', validators=[DataRequired(), Length(max=100)])
     tahun = IntegerField('Tahun Terbit', validators=[DataRequired()])
     submit = SubmitField('Simpan')
 
+# Form untuk Login
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
 
+# Route: Halaman Utama
 @app.route('/')
 def index():
-    books = Books.query.all()
-    return render_template('index.html', books=books)
+    try:
+        books = Books.query.all()
+        return render_template('index.html', books=books)
+    except Exception as e:
+        flash(f"Terjadi kesalahan: {e}", 'error')
+        return render_template('index.html', books=[])
 
+# Route: Login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -46,12 +58,14 @@ def login():
             flash('Login gagal. Periksa username dan password.', 'error')
     return render_template('login.html', form=form)
 
+# Route: Logout
 @app.route('/logout')
 def logout():
     session.pop('admin_logged_in', None)
     flash('Anda telah logout.', 'success')
     return redirect(url_for('index'))
 
+# Route: Tambah Buku
 @app.route('/add', methods=['GET', 'POST'])
 def add_book():
     if not session.get('admin_logged_in'):
@@ -60,17 +74,21 @@ def add_book():
 
     form = BookForm()
     if form.validate_on_submit():
-        new_book = Books(
-            judul=form.judul.data,
-            pengarang=form.pengarang.data,
-            tahun=form.tahun.data
-        )
-        db.session.add(new_book)
-        db.session.commit()
-        flash('Buku berhasil ditambahkan!', 'success')
-        return redirect(url_for('index'))
+        try:
+            new_book = Books(
+                judul=form.judul.data,
+                pengarang=form.pengarang.data,
+                tahun=form.tahun.data
+            )
+            db.session.add(new_book)
+            db.session.commit()
+            flash('Buku berhasil ditambahkan!', 'success')
+            return redirect(url_for('index'))
+        except Exception as e:
+            flash(f"Kesalahan saat menambahkan buku: {e}", 'error')
     return render_template('add.html', form=form)
 
+# Route: Edit Buku
 @app.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit_book(id):
     if not session.get('admin_logged_in'):
@@ -80,14 +98,18 @@ def edit_book(id):
     book = Books.query.get_or_404(id)
     form = BookForm(obj=book)
     if form.validate_on_submit():
-        book.judul = form.judul.data
-        book.pengarang = form.pengarang.data
-        book.tahun = form.tahun.data
-        db.session.commit()
-        flash('Buku berhasil diperbarui!', 'success')
-        return redirect(url_for('index'))
+        try:
+            book.judul = form.judul.data
+            book.pengarang = form.pengarang.data
+            book.tahun = form.tahun.data
+            db.session.commit()
+            flash('Buku berhasil diperbarui!', 'success')
+            return redirect(url_for('index'))
+        except Exception as e:
+            flash(f"Kesalahan saat memperbarui buku: {e}", 'error')
     return render_template('edit.html', form=form)
 
+# Route: Hapus Buku
 @app.route('/delete/<int:id>', methods=['POST'])
 def delete_book(id):
     if not session.get('admin_logged_in'):
@@ -95,10 +117,14 @@ def delete_book(id):
         return redirect(url_for('login'))
 
     book = Books.query.get_or_404(id)
-    db.session.delete(book)
-    db.session.commit()
-    flash('Buku berhasil dihapus!', 'success')
+    try:
+        db.session.delete(book)
+        db.session.commit()
+        flash('Buku berhasil dihapus!', 'success')
+    except Exception as e:
+        flash(f"Kesalahan saat menghapus buku: {e}", 'error')
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    debug_mode = os.environ.get('FLASK_DEBUG', 'True').lower() == 'true'
+    app.run(debug=debug_mode)
